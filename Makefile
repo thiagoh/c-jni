@@ -19,12 +19,15 @@ $(target): $(objects)
 	-o $(target) $(objects) -Wl,-ljvm -ljvm
 	
 # Mode 1
-c-jni.o: jnitest.o
-	@g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o c-jni.o jnitest.c
-	@g++ -S -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o c-jni.s jnitest.c
+#c-jni.o: jnitest.o
+#	@g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o c-jni.o jnitest.c
+#	@g++ -S -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o c-jni.s jnitest.c
 
 # Mode 2
 %.o: %.c
+	g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o $@ $<
+
+%.o: %.cpp
 	g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o $@ $<
 
 clean:

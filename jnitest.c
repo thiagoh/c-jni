@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
     const char* keyc_str = env->GetStringUTFChars((jstring) keyToStringValue, NULL);
     printf("%s\n", keyc_str);
 
+
     // Clean up
     env->ReleaseStringUTFChars(jstr, str);
 
@@ -63,4 +64,43 @@ int main(int argc, char** argv) {
     vm->DestroyJavaVM();
 
     return 0;
+}
+
+typedef struct {
+	jclass clazz;
+	jmethodID methodId;
+} method;
+
+method getMethod(JNIEnv *env, const char* classname, const char* methodname, const char* methodsig) {
+
+	jclass clazz = env->FindClass(classname);
+	//											"(argument-types)return-type"
+	jmethodID methodId = env->GetStaticMethodID(clazz, methodname, methodsig);
+
+	method method;
+	method.clazz = clazz;
+	method.methodId = methodId;
+
+	return method;
+}
+
+jobject fullexecStaticObject(JNIEnv *env, const char* classname, const char* methodname, const char* methodsig, ...) {
+
+	va_list args;
+	va_start(args, methodsig);
+	method method = getMethod(env, classname, methodname, methodsig);
+	jobject result = env->CallStaticObjectMethod(method.clazz, method.methodId, args);
+	va_end(args);
+
+	return result;
+}
+
+jobject execStaticObject(JNIEnv *env, method method, ...) {
+
+	va_list args;
+	va_start(args,method);
+	jobject result = env->CallStaticObjectMethod(method.clazz, method.methodId, args);
+	va_end(args);
+
+	return result;
 }
