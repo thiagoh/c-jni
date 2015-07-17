@@ -324,10 +324,14 @@ int main(int argc, char** argv) {
     jstring jstr = env->NewStringUTF("Hello World");
 
     // First get the class that contains the method you need to call
-    jclass clazz = env->FindClass("java/lang/String");
+    jclass StringClass = env->FindClass("java/lang/String");
+    jclass ObjectClass = env->FindClass("java/lang/Object");
 
     // Get the method that you want to call
-    jmethodID to_lower = env->GetMethodID(clazz, "toLowerCase", "()Ljava/lang/String;");
+    jmethodID to_lower = env->GetMethodID(StringClass, "toLowerCase", "()Ljava/lang/String;");
+
+    jmethodID ObjectToStringMethod = env->GetMethodID(ObjectClass, "toString", "()Ljava/lang/String;");
+
     // Call the method on the object
     jobject result = env->CallObjectMethod(jstr, to_lower);
 
@@ -340,6 +344,9 @@ int main(int argc, char** argv) {
 //    printf("%s\n", keyc_str);
 
     jobject key = getKey(env, "The fox jumped over the lazy dog");
+    jstring v = (jstring) fullexecObject(env, key, "java/lang/Object", "toString", "()Ljava/lang/String;");
+    const char* sv = env->GetStringUTFChars(v, NULL);
+    printf("out is %s\n", sv);
 
     // Clean up
     env->ReleaseStringUTFChars(jstr, str);
