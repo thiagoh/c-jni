@@ -1,7 +1,7 @@
 
 target = c-jni
 
-objects = c-jni.o
+objects = utils.o c-jni.o
 
 rebuildables = $(objects) $(target)
 
@@ -24,10 +24,10 @@ $(target): $(objects)
 #	@g++ -S -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o c-jni.s jnitest.c
 
 # Mode 2
-%.o: %.c
+%.o: %.c utils.h
 	g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o $@ $<
 
-%.o: %.cpp
+%.o: %.cpp utils.h
 	g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o $@ $<
 
 clean:
