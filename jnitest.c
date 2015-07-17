@@ -10,15 +10,23 @@
 
 int main(int argc, char** argv) {
 
+	JavaVMOption option;
+    option.optionString = "-Djava.class.path=token-gen-1.0.jar";
+
     JavaVM *vm;
     JNIEnv *env;
     JavaVMInitArgs vm_args;
-    vm_args.version = JNI_VERSION_1_2;
-    vm_args.nOptions = 0;
+    vm_args.version = JNI_VERSION_1_6;
+    vm_args.nOptions = 1;
+    vm_args.options = &option;
     vm_args.ignoreUnrecognized = 1;
 
     // Construct a VM
     jint res = JNI_CreateJavaVM(&vm, (void **)&env, &vm_args);
+
+    if (res == JNI_ERR) {
+    	return JNI_ERR;
+    }
 
     // Construct a String
     jstring jstr = env->NewStringUTF("Hello World");
@@ -33,8 +41,20 @@ int main(int argc, char** argv) {
 
     // Get a C-style string
     const char* str = env->GetStringUTFChars((jstring) result, NULL);
-
     printf("%s\n", str);
+
+    jclass encriptor = env->FindClass("br/com/facilit/portal/security/Encryptor");
+
+    //											"(argument-types)return-type"
+    jmethodID generateKey = env->GetStaticMethodID(encriptor, "generateKey", "()Ljava/security/Key;");
+    jobject key = env->CallStaticObjectMethod(encriptor, generateKey);
+
+    jclass keyClass = env->FindClass("java/security/Key");
+    jmethodID keyToString = env->GetMethodID(keyClass, "toString", "()Ljava/lang/String;");
+    jobject keyToStringValue = env->CallObjectMethod(key, keyToString);
+
+    const char* keyc_str = env->GetStringUTFChars((jstring) keyToStringValue, NULL);
+    printf("%s\n", keyc_str);
 
     // Clean up
     env->ReleaseStringUTFChars(jstr, str);
