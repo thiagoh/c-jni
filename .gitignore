@@ -33,3 +33,6 @@
 .cproject
 .project
 .settings/
+c-jni
+c-jni.s
+c-jni.o

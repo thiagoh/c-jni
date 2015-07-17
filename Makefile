@@ -1,21 +1,33 @@
 
-all: c-jni
+target = c-jni
+
+objects = c-jni.o
+
+rebuildables = $(objects) $(target)
+
+all: $(target)
+	echo "Success! All done."
 
 #http://xahlee.info/UnixResource_dir/_/ldpath.html
-c-jni: c-jni.o
+$(target): $(objects)
 	@g++ -L/usr/lib/jvm/java-7-oracle/jre/lib/amd64/server/ \
 	-L/usr/lib/jvm/java-7-oracle/jre/lib/amd64/ \
 	-Wl,-L/usr/lib/jvm/java-7-oracle/jre/lib/amd64/ \
 	-Wl,-L/usr/lib/jvm/java-7-oracle/jre/lib/amd64/server/ \
 	-Wl,-R/usr/lib/jvm/java-7-oracle/jre/lib/amd64/ \
 	-Wl,-R/usr/lib/jvm/java-7-oracle/jre/lib/amd64/server/ \
-	-o c-jni c-jni.o -Wl,-ljvm -ljvm
+	-o $(target) $(objects) -Wl,-ljvm -ljvm
 	
-c-jni.o: jnitest.c
+# Mode 1
+c-jni.o: jnitest.o
 	@g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o c-jni.o jnitest.c
 	@g++ -S -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o c-jni.s jnitest.c
 
+# Mode 2
+%.o: %.c
+	g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o $@ $<
+
 clean:
-	@rm c-jni.o c-jni.s c-jni
+	@rm $(objects) $(target) c-jni.s
 
 
