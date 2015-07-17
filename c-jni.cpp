@@ -251,19 +251,13 @@ void handleEx(JNIEnv *env) {
 
 jobject getKey(JNIEnv *env, const char* key_cstr) {
 
-	jthrowable t;
 	jstring desedejstring = env->NewStringUTF("DESede");
 
 //    SecretKeyFactory factory = SecretKeyFactory.getInstance("DESede");
 	jobject secretKeyFactory = fullexecStaticObject(env, "javax/crypto/SecretKeyFactory",
 								"getInstance", "(Ljava/lang/String;)Ljavax/crypto/SecretKeyFactory;", desedejstring);
 
-	t = env->ExceptionOccurred();
-
-	if (t) {
-		env->ExceptionDescribe();
-		return 0;
-	}
+	handleEx(env);
 
 	// string creation
 	jstring keyjstring = env->NewStringUTF(key_cstr);
@@ -271,15 +265,18 @@ jobject getKey(JNIEnv *env, const char* key_cstr) {
 //    byte[] keyBytes = "any string".getBytes();
 	jobject keyBytes = fullexecObject(env, keyjstring, "java/lang/String", "getBytes", "()[B");
 
-	return 0;
+	handleEx(env);
 
 //    DESedeKeySpec desedeKeySpec = new DESedeKeySpec(keyBytes);
 	jobject secretKeySpec = fullnewObject(env, "javax/crypto/spec/DESedeKeySpec", "([B)V", keyBytes);
 
+	handleEx(env);
 
 //    SecretKey key = factory.generateSecret(desedeKeySpec);
 	jobject skey = fullexecObject(env, secretKeyFactory, "javax/crypto/SecretKeyFactory", "generateSecret",
-						"(Ljava/security/spec/KeySpec)Ljavax/crypto/SecretKey", secretKeySpec);
+						"(Ljava/security/spec/KeySpec;)Ljavax/crypto/SecretKey;", secretKeySpec);
+
+	handleEx(env);
 
 	return skey;
 }
@@ -322,11 +319,6 @@ int main(int argc, char** argv) {
 			"()Ljava/lang/String;");
 
     // end init
-
-
-
-
-
 
     // Construct a String
     jstring jstr = env->NewStringUTF("Hello World");

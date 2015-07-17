@@ -31,6 +31,6 @@ $(target): $(objects)
 	g++ -O -c -I/usr/lib/jvm/java-7-oracle/include/ -I/usr/lib/jvm/java-7-oracle/include/linux/ -Wall -o $@ $<
 
 clean:
-	@rm $(objects) $(target) c-jni.s
+	@rm $(objects) $(target) c-jni.s || true
 
 
