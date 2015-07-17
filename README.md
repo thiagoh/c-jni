@@ -1,1 +1,1 @@
-# c_jni
+# cpp-jni
